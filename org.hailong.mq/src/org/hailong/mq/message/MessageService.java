@@ -32,7 +32,7 @@ public class MessageService extends ExecutorService {
 		this(Executors.newScheduledThreadPool(4),db);
 	}
 
-	private final static Pattern ID = Pattern.compile("[^.]+$");
+	private final static Pattern ID = Pattern.compile("[^\\.]+$");
 	
 	private Map<Long,Set<MQ>> _users = new HashMap<Long,Set<MQ>>(4);
 	
@@ -131,19 +131,8 @@ public class MessageService extends ExecutorService {
 				
 				try {
 					
-					final long[] uids = _db.add(Value.stringValue(v, null),uid,0,message.type,message.bytes);
+					_db.add(Value.stringValue(v, null),uid,0,message.type,message.bytes);
 					
-					mq.post(new Runnable(){
-
-						@Override
-						public void run() {
-							
-							for(long uid : uids) {
-								
-								mq.emit(new Message("broadcast.message.change." + uid,"",new byte[0]));
-							}
-							
-						}}, 0);
 				}
 				catch(final Throwable ex) {
 					
@@ -194,19 +183,7 @@ public class MessageService extends ExecutorService {
 				
 				try {
 					
-					final long[] uids = _db.add(Value.stringValue(v, null),0,mettingId,message.type,message.bytes);
-					
-					mq.post(new Runnable(){
-
-						@Override
-						public void run() {
-							
-							for(long uid : uids) {
-								
-								mq.emit(new Message("broadcast.message.change." + uid,"",new byte[0]));
-							}
-							
-						}}, 0);
+					_db.add(Value.stringValue(v, null),0,mettingId,message.type,message.bytes);
 					
 				}
 				catch(final Throwable ex) {

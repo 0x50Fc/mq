@@ -36,6 +36,6 @@ public interface MessageDB {
 	 * @throws Throwable
 	 * @return 
 	 */
-	public long[] add(String token,long uid,long mettingId,String type, byte[] bytes) throws Throwable ;
+	public void add(String token,long uid,long mettingId,String type, byte[] bytes) throws Throwable ;
 	
 }
