@@ -2,6 +2,11 @@ package org.hailong.mq.message;
 
 import org.hailong.mq.Message;
 
+/**
+ * 
+ * @author hailongz
+ *
+ */
 public interface MessageDB {
 
 	/**
@@ -19,7 +24,7 @@ public interface MessageDB {
 	 * @return
 	 * @throws Throwable
 	 */
-	public Message[] pull(long uid, long minObjectId,long limit) throws Throwable ;
+	public Message[] pull(String token, long minObjectId,long limit) throws Throwable ;
 	
 	/**
 	 * 添加消息
@@ -31,6 +36,6 @@ public interface MessageDB {
 	 * @throws Throwable
 	 * @return 
 	 */
-	public long[] add(long uid,long fuid,long mettingId,String type, byte[] bytes) throws Throwable ;
+	public long[] add(String token,long uid,long mettingId,String type, byte[] bytes) throws Throwable ;
 	
 }

@@ -107,7 +107,7 @@ public class MessageService extends ExecutorService {
 	 */
 	public void onSession(Message message,final MQ mq,final MQ from) {
 		
-		Object v = from.get("uid");
+		Object v = from.get("token");
 		
 		if(v != null) {
 			
@@ -131,7 +131,7 @@ public class MessageService extends ExecutorService {
 				
 				try {
 					
-					final long[] uids = _db.add(uid,Value.longValue(v, 0),0,message.type,message.bytes);
+					final long[] uids = _db.add(Value.stringValue(v, null),uid,0,message.type,message.bytes);
 					
 					mq.post(new Runnable(){
 
@@ -170,7 +170,7 @@ public class MessageService extends ExecutorService {
 	 */
 	public void onMetting(Message message,final MQ mq,final MQ from) {
 		
-		Object v = from.get("uid");
+		Object v = from.get("token");
 		
 		if(v != null) {
 			
@@ -194,7 +194,7 @@ public class MessageService extends ExecutorService {
 				
 				try {
 					
-					final long[] uids = _db.add(0,Value.longValue(v, 0),mettingId,message.type,message.bytes);
+					final long[] uids = _db.add(Value.stringValue(v, null),0,mettingId,message.type,message.bytes);
 					
 					mq.post(new Runnable(){
 
@@ -234,18 +234,19 @@ public class MessageService extends ExecutorService {
 	 */
 	public void onLogin(Message message,MQ mq,final MQ from) {
 		
-		String token = new String(message.bytes,Message.charset);
+		final String token = new String(message.bytes,Message.charset);
 		
 		try {
 			
 			final long uid = _db.auth(token);
 			
-			from.set("uid", uid);
-			
 			from.post(new Runnable(){
 
 				@Override
 				public void run() {
+					
+					from.set("uid", uid);
+					from.set("token", token);
 					
 					Set<MQ> mqs;
 					
@@ -288,7 +289,7 @@ public class MessageService extends ExecutorService {
 	 */
 	public void onPull(Message message,MQ mq,final MQ from) {
 		
-		Object v = from.get("uid");
+		Object v = from.get("token");
 		
 		if(v != null) {
 			
@@ -308,7 +309,7 @@ public class MessageService extends ExecutorService {
 				
 				long objectId = Value.longValue(new String(message.bytes,Message.charset), 0);
 				
-				final Message[] messages = _db.pull(Value.longValue(v, 0),objectId,200);
+				final Message[] messages = _db.pull(Value.stringValue(v, null),objectId,200);
 				
 				from.post(new Runnable(){
 
